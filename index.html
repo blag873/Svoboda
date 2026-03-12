@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Svoboda · мессенджер</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        
+        body {
+            background: #0B0D15;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            transition: background 0.3s;
+        }
+        
+        /* Тёмная тема (по умолчанию) */
+        body.dark-theme {
+            background: #0B0D15;
+        }
+        body.dark-theme .phone { background: #1A1F2E; }
+        body.dark-theme .header { background: #131825; }
+        body.dark-theme .tabs { background: #131825; }
+        body.dark-theme .tab { background: #252B3D; color: #8F97B0; }
+        body.dark-theme .tab.active { background: #00E0C6; color: #0B0D15; }
+        body.dark-theme .add-form { background: #222738; }
+        body.dark-theme .chat-item { background: #222738; }
+        body.dark-theme .messages { background: #222738; }
+        body.dark-theme .message { background: #2A2F40; color: white; }
+        body.dark-theme .my-message { background: #00E0C6; color: #0B0D15; }
+        body.dark-theme .input-row input { background: #252B3D; color: white; }
+        
+        /* Светлая тема */
+        body.light-theme {
+            background: #f0f2f5;
+        }
+        body.light-theme .phone { background: #ffffff; border-color: #00E0C6; }
+        body.light-theme .header { background: #00E0C6; border-bottom-color: #0B0D15; }
+        body.light-theme .logo { background: #0B0D15; color: #00E0C6; }
+        body.light-theme .online-badge { background: #0B0D15; color: #00E0C6; }
+        body.light-theme .user-input { background: white; border-color: #0B0D15; color: black; }
+        body.light-theme .tabs { background: #00E0C6; }
+        body.light-theme .tab { background: white; color: #0B0D15; }
+        body.light-theme .tab.active { background: #0B0D15; color: white; }
+        body.light-theme .add-form { background: #f8f9fa; }
+        body.light-theme .add-form h3 { color: #0B0D15; }
+        body.light-theme .add-form input { background: white; border-color: #00E0C6; color: black; }
+        body.light-theme .chat-item { background: #f8f9fa; }
+        body.light-theme .name { color: #0B0D15; }
+        body.light-theme .last-msg { color: #4a5568; }
+        body.light-theme .avatar { background: #00E0C6; color: #0B0D15; }
+        body.light-theme .messages { background: #f0f2f5; }
+        body.light-theme .message { background: white; color: #0B0D15; }
+        body.light-theme .my-message { background: #00E0C6; color: #0B0D15; }
+        body.light-theme .input-row input { background: white; color: black; }
+        
+        /* Синяя тема */
+        body.blue-theme {
+            background: #0a1929;
+        }
+        body.blue-theme .phone { background: #1e2a3a; border-color: #4d9fff; }
+        body.blue-theme .header { background: #15223b; border-bottom-color: #4d9fff; }
+        body.blue-theme .logo { background: #4d9fff; color: #0a1929; }
+        body.blue-theme .online-badge { background: #4d9fff; color: #0a1929; }
+        body.blue-theme .user-input { background: #2a3747; border-color: #4d9fff; color: white; }
+        body.blue-theme .tabs { background: #15223b; }
+        body.blue-theme .tab { background: #2a3747; color: #a0b8d4; }
+        body.blue-theme .tab.active { background: #4d9fff; color: #0a1929; }
+        body.blue-theme .add-form { background: #1e2a3a; border-color: #4d9fff; }
+        body.blue-theme .add-form h3 { color: white; }
+        body.blue-theme .add-form input { background: #2a3747; border-color: #4d9fff; color: white; }
+        body.blue-theme .chat-item { background: #1e2a3a; border-color: #4d9fff; }
+        body.blue-theme .name { color: white; }
+        body.blue-theme .last-msg { color: #a0b8d4; }
+        body.blue-theme .avatar { background: #4d9fff; color: #0a1929; border-color: #4d9fff; }
+        body.blue-theme .messages { background: #1e2a3a; }
+        body.blue-theme .message { background: #2a3747; color: white; }
+        body.blue-theme .my-message { background: #4d9fff; color: #0a1929; }
+        body.blue-theme .input-row input { background: #2a3747; border-color: #4d9fff; color: white; }
+        
+        /* Зелёная тема */
+        body.green-theme {
+            background: #0a2e1a;
+        }
+        body.green-theme .phone { background: #1a3a24; border-color: #4caf50; }
+        body.green-theme .header { background: #0f2e1a; border-bottom-color: #4caf50; }
+        body.green-theme .logo { background: #4caf50; color: #0a2e1a; }
+        body.green-theme .online-badge { background: #4caf50; color: #0a2e1a; }
+        body.green-theme .user-input { background: #2a4734; border-color: #4caf50; color: white; }
+        body.green-theme .tabs { background: #0f2e1a; }
+        body.green-theme .tab { background: #2a4734; color: #b8d9b8; }
+        body.green-theme .tab.active { background: #4caf50; color: #0a2e1a; }
+        body.green-theme .add-form { background: #1a3a24; border-color: #4caf50; }
+        body.green-theme .add-form h3 { color: white; }
+        body.green-theme .add-form input { background: #2a4734; border-color: #4caf50; color: white; }
+        body.green-theme .chat-item { background: #1a3a24; border-color: #4caf50; }
+        body.green-theme .name { color: white; }
+        body.green-theme .last-msg { color: #b8d9b8; }
+        body.green-theme .avatar { background: #4caf50; color: #0a2e1a; border-color: #4caf50; }
+        body.green-theme .messages { background: #1a3a24; }
+        body.green-theme .message { background: #2a4734; color: white; }
+        body.green-theme .my-message { background: #4caf50; color: #0a2e1a; }
+        body.green-theme .input-row input { background: #2a4734; border-color: #4caf50; color: white; }
+        
+        /* Фиолетовая тема */
+        body.purple-theme {
+            background: #1a0a2e;
+        }
+        body.purple-theme .phone { background: #2a1a3a; border-color: #9c4dff; }
+        body.purple-theme .header { background: #1f0f3a; border-bottom-color: #9c4dff; }
+        body.purple-theme .logo { background: #9c4dff; color: #1a0a2e; }
+        body.purple-theme .online-badge { background: #9c4dff; color: #1a0a2e; }
+        body.purple-theme .user-input { background: #372a47; border-color: #9c4dff; color: white; }
+        body.purple-theme .tabs { background: #1f0f3a; }
+        body.purple-theme .tab { background: #372a47; color: #d4b8ff; }
+        body.purple-theme .tab.active { background: #9c4dff; color: #1a0a2e; }
+        body.purple-theme .add-form { background: #2a1a3a; border-color: #9c4dff; }
+        body.purple-theme .add-form h3 { color: white; }
+        body.purple-theme .add-form input { background: #372a47; border-color: #9c4dff; color: white; }
+        body.purple-theme .chat-item { background: #2a1a3a; border-color: #9c4dff; }
+        body.purple-theme .name { color: white; }
+        body.purple-theme .last-msg { color: #d4b8ff; }
+        body.purple-theme .avatar { background: #9c4dff; color: #1a0a2e; border-color: #9c4dff; }
+        body.purple-theme .messages { background: #2a1a3a; }
+        body.purple-theme .message { background: #372a47; color: white; }
+        body.purple-theme .my-message { background: #9c4dff; color: #1a0a2e; }
+        body.purple-theme .input-row input { background: #372a47; border-color: #9c4dff; color: white; }
+        
+        .phone {
+            max-width: 400px;
+            width: 100%;
+            background: #1A1F2E;
+            border-radius: 40px;
+            height: 750px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 3px solid #00E0C6;
+            transition: all 0.3s;
+        }
+        
+        .header {
+            background: #131825;
+            padding: 20px;
+            border-bottom: 3px solid #00E0C6;
+            transition: all 0.3s;
+        }
+        
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .logo {
+            background: #00E0C6;
+            color: #0B0D15;
+            width: 60px;
+            height: 60px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 35px;
+            font-weight: 900;
+            transition: all 0.3s;
+        }
+        
+        .online-badge {
+            background: #00E0C6;
+            color: #0B0D15;
+            padding: 8px 18px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .user-input {
+            width: 100%;
+            padding: 18px;
+            background: #252B3D;
+            border: 2px solid #00E0C6;
+            border-radius: 30px;
+            color: white;
+            font-size: 18px;
+            transition: all 0.3s;
+        }
+        
+        .tabs {
+            display: flex;
+            padding: 15px;
+            gap: 8px;
+            background: #131825;
+            overflow-x: auto;
+            white-space: nowrap;
+            transition: all 0.3s;
+        }
+        
+        .tab {
+            display: inline-block;
+            padding: 15px 25px;
+            background: #252B3D;
+            border: 2px solid #00E0C6;
+            color: #8F97B0;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            background: #00E0C6;
+            color: #0B0D15;
+        }
+        
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .add-form {
+            background: #222738;
+            border-radius: 25px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px solid #00E0C6;
+            transition: all 0.3s;
+        }
+        
+        .add-form h3 {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 20px;
+            transition: color 0.3s;
+        }
+        
+        .add-form input {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: #2A2F40;
+            border: 2px solid #00E0C6;
+            border-radius: 20px;
+            color: white;
+            font-size: 18px;
+            transition: all 0.3s;
+        }
+        
+        .add-form button {
+            width: 100%;
+            padding: 18px;
+            background: #00E0C6;
+            border: none;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .chat-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 18px;
+            background: #222738;
+            border-radius: 25px;
+            margin-bottom: 12px;
+            border: 2px solid #00E0C6;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .avatar {
+            width: 70px;
+            height: 70px;
+            background: #2D3653;
+            border-radius: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: #00E0C6;
+            border: 3px solid #00E0C6;
+            transition: all 0.3s;
+        }
+        
+        .info {
+            flex: 1;
+        }
+        
+        .name {
+            color: white;
+            font-weight: 600;
+            font-size: 20px;
+            margin-bottom: 5px;
+            transition: color 0.3s;
+        }
+        
+        .last-msg {
+            color: #8F97B0;
+            font-size: 16px;
+            transition: color 0.3s;
+        }
+        
+        .verified-badge {
+            display: inline-block;
+            background: #00E0C6;
+            color: #0B0D15;
+            width: 20px;
+            height: 20px;
+            border-radius: 10px;
+            text-align: center;
+            line-height: 20px;
+            font-size: 14px;
+            margin-left: 5px;
+            cursor: help;
+        }
+        
+        .delete-item {
+            color: #ff6b6b;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 15px;
+            background: rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+        
+        .delete-item:hover {
+            background: #ff6b6b;
+            color: white;
+        }
+        
+        .requests-badge {
+            background: #ff4d4d;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 15px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        
+        .chat-window {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #1A1F2E;
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+            padding: 10px;
+            transition: all 0.3s;
+        }
+        
+        .chat-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: #131825;
+            padding: 20px;
+            border-radius: 25px;
+            margin-bottom: 15px;
+            border: 2px solid #00E0C6;
+            transition: all 0.3s;
+        }
+        
+        .back-btn {
+            font-size: 35px;
+            color: #00E0C6;
+            cursor: pointer;
+            width: 55px;
+            height: 55px;
+            background: #0B0D15;
+            border-radius: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            background: #222738;
+            padding: 15px;
+            border-radius: 25px;
+            margin-bottom: 15px;
+            border: 2px solid #00E0C6;
+            transition: all 0.3s;
+        }
+        
+        .message {
+            max-width: 80%;
+            padding: 15px;
+            border-radius: 20px;
+            background: #2A2F40;
+            color: white;
+            align-self: flex-start;
+            margin: 5px 0;
+            font-size: 16px;
+            position: relative;
+            transition: all 0.3s;
+        }
+        
+        .my-message {
+            background: #00E0C6;
+            color: #0B0D15;
+            margin-left: auto;
+        }
+        
+        .message-image {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 15px;
+            margin-top: 8px;
+            cursor: pointer;
+        }
+        
+        .message-video {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 15px;
+            margin-top: 8px;
+        }
+        
+        .message-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+            font-size: 14px;
+        }
+        
+        .like-button {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 15px;
+            background: rgba(0,0,0,0.2);
+        }
+        
+        .like-button.liked {
+            color: #ff4d4d;
+        }
+        
+        .delete-button {
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 15px;
+            background: rgba(0,0,0,0.2);
+            color: #ff6b6b;
+            font-size: 14px;
+        }
+        
+        .input-area {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .input-row {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .input-row input {
+            flex: 1;
+            padding: 18px;
+            background: #252B3D;
+            border: 2px solid #00E0C6;
+            border-radius: 30px;
+            color: white;
+            font-size: 18px;
+            transition: all 0.3s;
+        }
+        
+        .input-row button {
+            padding: 18px 25px;
+            background: #00E0C6;
+            border: none;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .media-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .media-btn {
+            flex: 1;
+            padding: 15px;
+            background: #2A2F40;
+            border: 2px solid #00E0C6;
+            border-radius: 25px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .media-btn:hover {
+            background: #00E0C6;
+            color: #0B0D15;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        
+        .modal img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 20px;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 40px;
+            color: #00E0C6;
+            cursor: pointer;
+            width: 60px;
+            height: 60px;
+            background: #0B0D15;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .theme-selector {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .theme-option {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: #2A2F40;
+            border: 2px solid #00E0C6;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .theme-option:hover {
+            background: #00E0C6;
+        }
+        
+        .theme-color {
+            width: 40px;
+            height: 40px;
+            border-radius: 20px;
+        }
+        
+        .theme-name {
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="dark-theme">
+    <div class="phone">
+        <!-- Шапка -->
+        <div class="header">
+            <div class="header-top">
+                <div class="logo">S</div>
+                <span class="online-badge">ONLINE</span>
+            </div>
+            <input type="text" class="user-input" id="username" value="User" placeholder="Ваше имя">
+        </div>
+        
+        <!-- Табы -->
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('chats')">Чаты</button>
+            <button class="tab" onclick="showTab('groups')">Группы</button>
+             <button class="tab" onclick="showTab('channels')">Каналы</button>
+            <button class="tab" onclick="showTab('private')">Личное</button>
+            <button class="tab" onclick="showTab('settings')">Настройки</button>
+            <button class="tab" onclick="showTab('verification')">✓ Вериф.</button>
+        </div>
+        
+        <!-- Контент -->
+        <div class="content">
+            <!-- Чаты -->
+            <div id="chats" class="tab-content active">
+                <div class="add-form">
+                    <h3>➕ Добавить друга</h3>
+                    <input type="text" id="friendName" value="Анна">
+                    <button onclick="addFriend()">ДОБАВИТЬ</button>
+                </div>
+                <div id="friendsList"></div>
+            </div>
+            
+            <!-- Группы -->
+            <div id="groups" class="tab-content">
+                <div class="add-form">
+                    <h3>👥 Создать группу</h3>
+                    <input type="text" id="groupName" value="Моя группа">
+                    <button onclick="addGroup()">СОЗДАТЬ</button>
+                </div>
+                <div id="groupsList"></div>
+            </div>
+            
+            <!-- Каналы -->
+            <div id="channels" class="tab-content">
+                <div class="add-form">
+                    <h3>📢 Создать канал</h3>
+                    <input type="text" id="channelName" value="Мой канал">
+                    <button onclick="addChannel()">СОЗДАТЬ</button>
+                </div>
+                <div id="channelsList"></div>
+            </div>
+            
+            <!-- Личное -->
+            <div id="private" class="tab-content">
+                <div class="add-form">
+                    <h3>🔐 Личное</h3>
+                    <p style="color:#8F97B0;">Только для вас</p>
+                    <button onclick="openPrivate()">ОТКРЫТЬ</button>
+                </div>
+            </div>
+            
+            <!-- Настройки -->
+            <div id="settings" class="tab-content">
+                <div class="add-form">
+                    <h3>🎨 Выберите тему</h3>
+                    <div class="theme-selector">
+                        <div class="theme-option" onclick="setTheme('dark')">
+                            <div class="theme-color" style="background: #0B0D15;"></div>
+                            <div class="theme-name">Тёмная</div>
+                        </div>
+                        <div class="theme-option" onclick="setTheme('light')">
+                            <div class="theme-color" style="background: #f0f2f5;"></div>
+                            <div class="theme-name">Светлая</div>
+                        </div>
+                        <div class="theme-option" onclick="setTheme('blue')">
+                            <div class="theme-color" style="background: #4d9fff;"></div>
+                            <div class="theme-name">Синяя</div>
+                        </div>
+                        <div class="theme-option" onclick="setTheme('green')">
+                            <div class="theme-color" style="background: #4caf50;"></div>
+                            <div class="theme-name">Зелёная</div>
+                        </div>
+                        <div class="theme-option" onclick="setTheme('purple')">
+                            <div class="theme-color" style="background: #9c4dff;"></div>
+                            <div class="theme-name">Фиолетовая</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Верификация -->
+            <div id="verification" class="tab-content">
+                <div class="add-form">
+                    <h3>✓ Заявки на верификацию</h3>
+                    <p style="color:#8F97B0; margin-bottom:15px;">Сюда приходят заявки от пользователей</p>
+                    <div id="verificationRequests"></div>
+                    <div id="noRequests" style="color:#8F97B0; text-align:center;">Нет активных заявок</div>
+                </div>
+                
+                <div class="add-form">
+                    <h3>📊 Верифицированные пользователи</h3>
+                    <div id="verifiedUsers"></div>
+                </div>
+                
+                <div class="add-form">
+                    <h3>🔍 Отправить заявку</h3>
+                    <p style="color:#8F97B0;">Ваш ник: <span id="currentUserNick"></span></p>
+                    <button onclick="sendVerificationRequest()">Отправить заявку на верификацию</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Окно чата -->
+    <div id="chatWindow" class="chat-window hidden">
+        <div class="chat-header">
+            <div class="back-btn" onclick="closeChat()">←</div>
+            <div>
+                <div id="chatTitle" style="color:white; font-size:24px;"></div>
+                <div id="chatRole" style="color:#8F97B0; font-size:16px;"></div>
+            </div>
+        </div>
+        <div class="messages" id="chatMessages"></div>
+        <div class="input-area">
+            <div class="input-row">
+                <input type="text" id="messageInput" placeholder="Сообщение">
+                <button onclick="sendMessage()">→</button>
+            </div>
+            <div class="media-buttons">
+                <button class="media-btn" onclick="selectImage()">🖼️ Фото</button>
+                <button class="media-btn" onclick="selectVideo()">🎥 Видео</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Модальное окно -->
+    <div id="modal" class="modal hidden" onclick="closeModal()">
+        <div class="modal-close">✕</div>
+        <img id="modalImage" src="">
+    </div>
+
+    <script>
+        // Данные
+        let friends = [];
+        let groups = [];
+        let channels = [];
+        let messages = {};
+        let privateId = null;
+        let currentChat = null;
+        let currentType = null;
+        let currentUser = 'User';
+        
+        // Данные для верификации
+        let verificationRequests = []; // Заявки на верификацию
+        let verifiedUsers = []; // Верифицированные пользователи
+        const ADMIN_NICK = 'Blag873'; // Ник администратора
+        
+        // Загрузка
+        try {
+            let saved = localStorage.getItem('svoboda_verification');
+            if (saved) {
+                let data = JSON.parse(saved);
+                friends = data.friends || [];
+                groups = data.groups || [];
+                channels = data.channels || [];
+                messages = data.messages || {};
+                privateId = data.privateId || null;
+                verificationRequests = data.verificationRequests || [];
+                verifiedUsers = data.verifiedUsers || [];
+                
+                // Загружаем сохранённую тему
+                if (data.theme) {
+                    document.body.className = data.theme + '-theme';
+                }
+            }
+        } catch(e) {}
+        
+        // Тестовые данные
+        if (friends.length === 0) {
+            friends.push({id: 'f1', name: 'Анна'});
+            messages['f1'] = [{text: 'Привет!', user: 'Анна', time: '10:30', isMine: false, likes: 0, likedBy: []}];
+        }
+        
+        if (groups.length === 0) {
+            groups.push({id: 'g1', name: 'Друзья', owner: 'User'});
+            messages['g1'] = [{text: 'Всем привет!', user: 'User', time: '09:00', isMine: true, likes: 0, likedBy: []}];
+        }
+        
+        if (channels.length === 0) {
+            channels.push({id: 'c1', name: 'Новости', owner: 'User'});
+            messages['c1'] = [{text: 'Первый пост', user: 'User', time: '09:00', isMine: true, likes: 0, likedBy: []}];
+        }
+        
+        // Сохранение
+        function save() {
+            let theme = document.body.className.replace('-theme', '');
+            localStorage.setItem('svoboda_verification', JSON.stringify({
+                friends: friends,
+                groups: groups,
+                channels: channels,
+                messages: messages,
+                privateId: privateId,
+                verificationRequests: verificationRequests,
+                verifiedUsers: verifiedUsers,
+                theme: theme
+            }));
+        }
+        
+        // Показать вкладку
+        function showTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById(tab).classList.add('active');
+            
+            if (tab === 'verification') {
+                updateVerificationTab();
+            }
+        }
+        
+        // Тема
+        function setTheme(theme) {
+            document.body.className = theme + '-theme';
+            save();
+        }
+        
+        // Получить имя пользователя
+        function getUser() {
+            return document.getElementById('username').value || 'User';
+        }
+        
+        // Проверка, верифицирован ли пользователь
+        function isUserVerified(username) {
+            return verifiedUsers.includes(username);
+        }
+        
+        // Получить имя с галочкой
+        function getNameWithBadge(name) {
+            if (isUserVerified(name)) {
+                return name + ' <span class="verified-badge" title="Верифицированный пользователь">✓</span>';
+            }
+            return name;
+        }
+        
+        // Обновление имени
+        document.getElementById('username').oninput = function() {
+            currentUser = this.value;
+            document.getElementById('currentUserNick').textContent = currentUser;
+            updateGroups();
+            updateChannels();
+            save();
+        };
+        
+        // Друзья
+        function addFriend() {
+            let name = document.getElementById('friendName').value;
+            if (!name) return;
+            friends.push({id: 'f' + Date.now(), name: name});
+            updateFriends();
+            save();
+        }
+        
+        function updateFriends() {
+            let html = '';
+            for (let f of friends) {
+                let last = messages[f.id]?.length ? messages[f.id][messages[f.id].length-1] : {text:'Нет сообщений'};
+                let lastText = last.mediaUrl ? (last.mediaType === 'image' ? '🖼️ Фото' : '🎥 Видео') : last.text;
+                let nameWithBadge = getNameWithBadge(f.name);
+                html += `<div class="chat-item" onclick="openChat('${f.id}', 'friend', '${f.name}')">
+                    <div class="avatar">${f.name[0]}</div>
+                    <div class="info">
+                        <div class="name">${nameWithBadge}</div>
+                        <div class="last-msg">${lastText}</div>
+                    </div>
+                </div>`;
+            }
+            document.getElementById('friendsList').innerHTML = html || '<p style="color:#8F97B0;">Нет друзей</p>';
+        }
+        
+        // Группы
+        function addGroup() {
+            let name = document.getElementById('groupName').value;
+            if (!name) return;
+            groups.push({id: 'g' + Date.now(), name: name, owner: getUser()});
+            updateGroups();
+            save();
+        }
+        
+        function updateGroups() {
+            let html = '';
+            for (let g of groups) {
+                let last = messages[g.id]?.length ? messages[g.id][messages[g.id].length-1] : {text:'Нет сообщений'};
+                let lastText = last.mediaUrl ? (last.mediaType === 'image' ? '🖼️ Фото' : '🎥 Видео') : last.text;
+                let isOwner = g.owner === getUser() ? '👑' : '';
+                let nameWithBadge = getNameWithBadge(g.name);
+                html += `<div class="chat-item" style="position:relative;">
+                    <div class="avatar">👥</div>
+                    <div class="info" onclick="openChat('${g.id}', 'group', '${g.name}')">
+                        <div class="name">${nameWithBadge} ${isOwner}</div>
+                        <div class="last-msg">${lastText}</div>
+                    </div>
+                    ${g.owner === getUser() ? `<div class="delete-item" onclick="deleteGroup('${g.id}')" style="position:absolute; right:15px;">🗑️</div>` : ''}
+                </div>`;
+            }
+            document.getElementById('groupsList').innerHTML = html || '<p style="color:#8F97B0;">Нет групп</p>';
+        }
+        
+        // Каналы
+        function addChannel() {
+            let name = document.getElementById('channelName').value;
+            if (!name) return;
+            channels.push({id: 'c' + Date.now(), name: name, owner: getUser()});
+            updateChannels();
+            save();
+        }
+        
+        function updateChannels() {
+            let html = '';
+            for (let c of channels) {
+                let last = messages[c.id]?.length ? messages[c.id][messages[c.id].length-1] : {text:'Нет постов'};
+                let lastText = last.mediaUrl ? (last.mediaType === 'image' ? '🖼️ Фото' : '🎥 Видео') : last.text;
+                let isOwner = c.owner === getUser() ? '👑' : '';
+                let nameWithBadge = getNameWithBadge(c.name);
+                html += `<div class="chat-item" style="position:relative;">
+                    <div class="avatar">📢</div>
+                    <div class="info" onclick="openChat('${c.id}', 'channel', '${c.name}')">
+                        <div class="name">${nameWithBadge} ${isOwner}</div>
+                        <div class="last-msg">${lastText}</div>
+                    </div>
+                    ${c.owner === getUser() ? `<div class="delete-item" onclick="deleteChannel('${c.id}')" style="position:absolute; right:15px;">🗑️</div>` : ''}
+                </div>`;
+            }
+            document.getElementById('channelsList').innerHTML = html || '<p style="color:#8F97B0;">Нет каналов</p>';
+        }
+        
+        // Удаление группы
+        function deleteGroup(groupId) {
+            if (confirm('Вы уверены, что хотите удалить эту группу?')) {
+                groups = groups.filter(g => g.id !== groupId);
+                delete messages[groupId];
+                save();
+                updateGroups();
+            }
+        }
+        
+        // Удаление канала
+        function deleteChannel(channelId) {
+            if (confirm('Вы уверены, что хотите удалить этот канал?')) {
+                channels = channels.filter(c => c.id !== channelId);
+                delete messages[channelId];
+                save();
+                updateChannels();
+            }
+        }
+        
+        // Личное
+        function openPrivate() {
+            if (!privateId) {
+                privateId = 'p' + Date.now();
+                messages[privateId] = [];
+                save();
+            }
+            currentChat = privateId;
+            currentType = 'private';
+            document.getElementById('chatTitle').innerHTML = '📔 Личный дневник';
+            document.getElementById('chatRole').innerHTML = 'Только вы';
+            document.getElementById('chatWindow').classList.remove('hidden');
+            showMessages();
+        }
+        
+        // Открыть чат
+        function openChat(id, type, name) {
+            currentChat = id;
+            currentType = type;
+            
+            let icons = {friend:'👤', group:'👥', channel:'📢'};
+            document.getElementById('chatTitle').innerHTML = icons[type] + ' ' + name;
+            
+            if (type === 'channel') {
+                let channel = channels.find(c => c.id === id);
+                let isOwner = channel && channel.owner === getUser();
+                document.getElementById('chatRole').innerHTML = isOwner ? '👑 Владелец' : '📖 Только чтение';
+            } else {
+                document.getElementById('chatRole').innerHTML = type === 'group' ? '👥 Участник' : '💬 Диалог';
+            }
+            
+            document.getElementById('chatWindow').classList.remove('hidden');
+            showMessages();
+        }
+        
+        function closeChat() {
+            document.getElementById('chatWindow').classList.add('hidden');
+            currentChat = null;
+        }
+        
+        // Лайк
+        function likeMessage(chatId, msgIndex) {
+            if (!messages[chatId] || !messages[chatId][msgIndex]) return;
+            
+            let msg = messages[chatId][msgIndex];
+            let user = getUser();
+            
+            if (!msg.likedBy) msg.likedBy = [];
+            if (!msg.likes) msg.likes = 0;
+            
+            if (msg.likedBy.includes(user)) {
+                msg.likes--;
+                msg.likedBy = msg.likedBy.filter(u => u !== user);
+            } else {
+                msg.likes++;
+                msg.likedBy.push(user);
+            }
+            
+            save();
+            showMessages();
+            updateFriends();
+            updateGroups();
+            updateChannels();
+        }
+        
+        // Удалить сообщение
+        function deleteMessage(chatId, msgIndex) {
+            if (!messages[chatId] || !messages[chatId][msgIndex]) return;
+            
+            let msg = messages[chatId][msgIndex];
+            let user = getUser();
+            
+            let canDelete = false;
+            
+            if (currentType === 'channel') {
+                let channel = channels.find(c => c.id === chatId);
+                if (channel && channel.owner === user) canDelete = true;
+            } else if (currentType === 'group') {
+                let group = groups.find(g => g.id === chatId);
+                if (group && group.owner === user) canDelete = true;
+                if (msg.user === user) canDelete = true;
+            } else {
+                if (msg.user === user) canDelete = true;
+            }
+            
+            if (!canDelete) {
+                alert('У вас нет прав на удаление этого сообщения');
+                return;
+            }
+            
+            messages[chatId].splice(msgIndex, 1);
+            save();
+            showMessages();
+            updateFriends();
+            updateGroups();
+            updateChannels();
+        }
+        
+        // Отправить сообщение
+        function sendMessage() {
+            let text = document.getElementById('messageInput').value;
+            if (!text || !currentChat) return;
+            
+            if (currentType === 'channel') {
+                let channel = channels.find(c => c.id === currentChat);
+                if (channel && channel.owner !== getUser()) {
+                    alert('Только владелец может писать!');
+                    return;
+                }
+            }
+            
+            if (!messages[currentChat]) messages[currentChat] = [];
+            
+            messages[currentChat].push({
+                text: text,
+                user: getUser(),
+                time: new Date().toLocaleTimeString().slice(0,5),
+                isMine: true,
+                likes: 0,
+                likedBy: []
+            });
+            
+            save();
+            showMessages();
+            document.getElementById('messageInput').value = '';
+            updateFriends();
+            updateGroups();
+            updateChannels();
+        }
+        
+        // Выбор изображения
+        function selectImage() {
+            if (!currentChat) {
+                alert('Сначала откройте чат');
+                return;
+            }
+            let input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = function(e) {
+                let file = e.target.files[0];
+                if (file) {
+                    let reader = new FileReader();
+                    reader.onload = function(ev) {
+                        sendMedia(ev.target.result, 'image');
+                    };
+                    reader.readAsDataURL(file);
+                }
+          };
+            input.click();
+        }
+        
+        // Выбор видео
+        function selectVideo() {
+            if (!currentChat) {
+                alert('Сначала откройте чат');
+                return;
+            }
+            let input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'video/*';
+            input.onchange = function(e) {
+                let file = e.target.files[0];
+                if (file) {
+                    let reader = new FileReader();
+                    reader.onload = function(ev) {
+                        sendMedia(ev.target.result, 'video');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+            input.click();
+        }
+        
+        // Отправить медиа
+        function sendMedia(url, type) {
+            if (!currentChat) return;
+            
+            if (currentType === 'channel') {
+                let channel = channels.find(c => c.id === currentChat);
+                if (channel && channel.owner !== getUser()) {
+                    alert('Только владелец может отправлять медиа!');
+                    return;
+                }
+            }
+            
+            if (!messages[currentChat]) messages[currentChat] = [];
+            
+            messages[currentChat].push({
+                mediaUrl: url,
+                mediaType: type,
+                user: getUser(),
+                time: new Date().toLocaleTimeString().slice(0,5),
+                isMine: true,
+                likes: 0,
+                likedBy: []
+            });
+            
+            save();
+            showMessages();
+            updateFriends();
+            updateGroups();
+            updateChannels();
+        }
+        
+        // Показать сообщения
+        function showMessages() {
+            let html = '';
+            if (currentChat && messages[currentChat]) {
+                for (let i = 0; i < messages[currentChat].length; i++) {
+                    let m = messages[currentChat][i];
+                    let likes = m.likes || 0;
+                    let isLiked = m.likedBy && m.likedBy.includes(getUser());
+                    let userName = getNameWithBadge(m.user);
+                    
+                    if (m.mediaType === 'image') {
+                        html += `<div class="message ${m.isMine ? 'my-message' : ''}">
+                            <img class="message-image" src="${m.mediaUrl}" onclick="openImage('${m.mediaUrl}')">
+                            <div style="font-size:12px; margin-top:5px;">${userName} · ${m.time}</div>
+                            <div class="message-footer">
+                                <div class="like-button ${isLiked ? 'liked' : ''}" onclick="likeMessage('${currentChat}', ${i})">
+                                    ❤️ ${likes}
+                                </div>
+                                <div class="delete-button" onclick="deleteMessage('${currentChat}', ${i})">
+                                    🗑️
+                                </div>
+                            </div>
+                        </div>`;
+                    } else if (m.mediaType === 'video') {
+                        html += `<div class="message ${m.isMine ? 'my-message' : ''}">
+                            <video class="message-video" controls>
+                                <source src="${m.mediaUrl}">
+                            </video>
+                            <div style="font-size:12px; margin-top:5px;">${userName} · ${m.time}</div>
+                            <div class="message-footer">
+                                <div class="like-button ${isLiked ? 'liked' : ''}" onclick="likeMessage('${currentChat}', ${i})">
+                                    ❤️ ${likes}
+                                </div>
+                                <div class="delete-button" onclick="deleteMessage('${currentChat}', ${i})">
+                                    🗑️
+                                </div>
+                            </div>
+                        </div>`;
+                    } else {
+                        html += `<div class="message ${m.isMine ? 'my-message' : ''}">
+                            ${m.text}
+                            <div style="font-size:12px; margin-top:5px;">${userName} · ${m.time}</div>
+                            <div class="message-footer">
+                                <div class="like-button ${isLiked ? 'liked' : ''}" onclick="likeMessage('${currentChat}', ${i})">
+                                    ❤️ ${likes}
+                                </div>
+                                <div class="delete-button" onclick="deleteMessage('${currentChat}', ${i})">
+                                    🗑️
+                                </div>
+                            </div>
+                        </div>`;
+                    }
+                }
+            }
+            document.getElementById('chatMessages').innerHTML = html;
+        }
+        
+        // Открыть изображение
+        function openImage(url) {
+            document.getElementById('modalImage').src = url;
+            document.getElementById('modal').classList.remove('hidden');
+        }
+        
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
+        }
+        
+        // ===== ФУНКЦИИ ВЕРИФИКАЦИИ =====
+        
+        // Обновление вкладки верификации
+        function updateVerificationTab() {
+            document.getElementById('currentUserNick').textContent = getUser();
+            
+            // Показываем заявки только админу
+            let requestsHtml = '';
+            if (getUser() === ADMIN_NICK) {
+                if (verificationRequests.length > 0) {
+                    for (let req of verificationRequests) {
+                        requestsHtml += `<div class="chat-item" style="flex-wrap:wrap;">
+                            <div style="flex:1;">
+                                <div class="name">${req}</div>
+                                <div style="color:#8F97B0;">Ждёт подтверждения</div>
+                            </div>
+                            <div style="display:flex; gap:10px;">
+                                <button onclick="approveVerification('${req}')" style="padding:10px; background:#00E0C6; border:none; border-radius:15px; cursor:pointer;">✓</button>
+                                <button onclick="rejectVerification('${req}')" style="padding:10px; background:#ff6b6b; border:none; border-radius:15px; cursor:pointer;">✗</button>
+                            </div>
+                        </div>`;
+                    }
+                } else {
+                    requestsHtml = '<p style="color:#8F97B0; text-align:center;">Нет активных заявок</p>';
+                }
+            } else {
+                requestsHtml = '<p style="color:#8F97B0; text-align:center;">Только администратор может просматривать заявки</p>';
+            }
+            document.getElementById('verificationRequests').innerHTML = requestsHtml;
+            
+            // Показываем верифицированных пользователей
+            let verifiedHtml = '';
+            if (verifiedUsers.length > 0) {
+                for (let user of verifiedUsers) {
+                    verifiedHtml += `<div class="chat-item">
+                        <div class="avatar">${user[0]}</div>
+                        <div class="info">
+                            <div class="name">${user} <span class="verified-badge">✓</span></div>
+                        </div>
+                    </div>`;
+                }
+            } else {
+                verifiedHtml = '<p style="color:#8F97B0; text-align:center;">Нет верифицированных пользователей</p>';
+            }
+            document.getElementById('verifiedUsers').innerHTML = verifiedHtml;
+        }
+        
+        // Отправить заявку на верификацию
+        function sendVerificationRequest() {
+            let user = getUser();
+            if (verifiedUsers.includes(user)) {
+                alert('Вы уже верифицированы!');
+                return;
+            }
+            if (verificationRequests.includes(user)) {
+                alert('Заявка уже отправлена!');
+                return;
+            }
+            verificationRequests.push(user);
+            save();
+            updateVerificationTab();
+            alert('Заявка отправлена администратору Blag873');
+        }
+        
+        // Одобрить верификацию
+        function approveVerification(user) {
+            if (getUser() !== ADMIN_NICK) {
+                alert('Только администратор может одобрять заявки');
+                return;
+            }
+            verificationRequests = verificationRequests.filter(u => u !== user);
+            if (!verifiedUsers.includes(user)) {
+                verifiedUsers.push(user);
+            }
+            save();
+            updateVerificationTab();
+            updateFriends();
+            updateGroups();
+            updateChannels();
+            alert(`Пользователь ${user} верифицирован!`);
+        }
+        
+        // Отклонить верификацию
+        function rejectVerification(user) {
+            if (getUser() !== ADMIN_NICK) {
+                alert('Только администратор может отклонять заявки');
+                return;
+            }
+            verificationRequests = verificationRequests.filter(u => u !== user);
+            save();
+            updateVerificationTab();
+            alert(`Заявка ${user} отклонена`);
+        }
+        
+        // Запуск
+        currentUser = document.getElementById('username').value;
+        document.getElementById('currentUserNick').textContent = currentUser;
+        updateFriends();
+        updateGroups();
+        updateChannels();
+        save();
+    </script>
+</body>
+</html>
